@@ -14,4 +14,6 @@ for (const f of fs.readdirSync(root)) {
   if (/\.html$/.test(f) || ['manifest.json', 'sw.js', 'robots.txt'].includes(f)) fs.copyFileSync(path.join(root, f), path.join(dist, f));
 }
 for (const d of ['admin', 'assets', 'css', 'js', 'bio', 'jlodni']) fs.cpSync(path.join(root, d), path.join(dist, d), { recursive: true, filter: (s) => !s.includes(`${path.sep}original`) });
+// 3) Pages localisées : /es/… et /ht/… (une URL = une langue).
+require('./build-i18n.js').buildLocalizedPages({ root, dist, site });
 console.log('[build] dist/ prêt.');
