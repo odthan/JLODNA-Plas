@@ -78,7 +78,9 @@
   "rewrites": [
     {
       "source": "/sitemap.xml",
-      "destination": "/api/sitemap"
+      "destination": "/api/sitemap"}
+      { "source": "/:lang(es|ht)/:page(about|account|b2b|cart|checkout|contact|delete-account|login|orders|product|register|seller|shop)", "destination": "/:page.html" },
+{ "source": "/:lang(es|ht)", "destination": "/shop.html" }
     },
     {
       "source": "/bio/u/:slug",
