@@ -72,10 +72,10 @@ function send(res, status, body) {
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return send(res, 405, { error: 'METHOD_NOT_ALLOWED' });
   if (!allowedOrigin(req)) return send(res, 403, { error: 'FORBIDDEN' });
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return send(res, 503, { error: 'ASSISTANT_NOT_CONFIGURED' });
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) { console.error('jlodni 503: variable manquante -> SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY'); return send(res, 503, { error: 'ASSISTANT_NOT_CONFIGURED' }); }
 
   const llm = getLLM();
-  if (!llm) return send(res, 503, { error: 'ASSISTANT_NOT_CONFIGURED' });
+  if (!llm) { console.error('jlodni 503: variables IA incompletes ou invalides -> AI_PROVIDER (openai), AI_API_KEY, AI_MODEL'); return send(res, 503, { error: 'ASSISTANT_NOT_CONFIGURED' }); }
 
   const body = typeof req.body === 'string' ? safeJson(req.body) : req.body;
   const message = body && typeof body.message === 'string' ? body.message.trim() : '';
@@ -83,7 +83,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const settings = await assistantSettings();
-    if (!settings.enabled) return send(res, 503, { error: 'ASSISTANT_DISABLED' });
+    if (!settings.enabled) { console.error('jlodni 503: assistant desactive dans settings (ou ligne assistant illisible)'); return send(res, 503, { error: 'ASSISTANT_DISABLED' }); }
 
     const ip = String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '').split(',')[0].trim();
     const ipKey = crypto.createHash('sha256').update(ip + (process.env.RATE_LIMIT_SALT || process.env.SUPABASE_SERVICE_ROLE_KEY)).digest('hex').slice(0, 32);
