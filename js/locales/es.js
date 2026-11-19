@@ -480,6 +480,8 @@ const words = {
   "Un remboursement est effectué avec le même mode de paiement et dans la devise de la commande, après validation du retour.": "El reembolso se realiza con el mismo método de pago y en la moneda del pedido, tras validar la devolución.",
   "Annulation": "Cancelación",
   "Vous pouvez demander l’annulation d’une commande tant qu’elle n’est pas expédiée, depuis la page Contact.": "Puedes solicitar la cancelación de un pedido mientras no haya sido enviado, desde la página de Contacto.",
+  "Voir le panier": "Ver el carrito",
+  "✔ Produit ajouté au panier.": "✔ Producto añadido al carrito.",
 };
 const patterns = [
   [/^© (\d{4}) JLODNA Plas\. Tous droits réservés\.$/, (y) => `© ${y} JLODNA Plas. Todos los derechos reservados.`],
