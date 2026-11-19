@@ -9,6 +9,7 @@ export async function render(el) {
   const { data: rows, error } = await sb.from('settings').select('*').in('key', ['store', 'shipping', 'payment_methods', 'currencies', 'shipping_zones']); if (error) throw error;
   const S = Object.fromEntries(rows.map((r) => [r.key, r.value]));
   const pm = S.payment_methods || {};
+  const PM_HINT = { card: 'Stripe — clés à ajouter sur Vercel', paypal: 'PayPal — clés à ajouter sur Vercel', moncash: 'Haïti uniquement — clés à ajouter sur Vercel', natcash: 'manuel : le personnel confirme le paiement' };
   // Devises et livraison par pays (montants de livraison en HTG, devise de base)
   const CUR = { ...DEFAULT_CONFIG, ...(S.currencies || {}) };
   const Z = S.shipping_zones || { HT: { enabled: true, default_fee: S.shipping?.flat_fee ?? 0, free_over: S.shipping?.free_over ?? null, regions: {} }, DO: { enabled: true, default_fee: S.shipping?.flat_fee ?? 0, free_over: S.shipping?.free_over ?? null, regions: {} } };
@@ -26,8 +27,8 @@ export async function render(el) {
   <label class="chk"><input type="checkbox" id="fx-dop-on" ${CUR.DOP?.enabled === false ? '' : 'checked'}> Proposer le peso dominicain (DOP)</label>
   <h2>Livraison par pays</h2>${zoneHtml('HT', '🇭🇹 Haïti', DEPARTMENTS_HT)}${zoneHtml('DO', '🇩🇴 République dominicaine', PROVINCES_DO)}
   <h2>Livraison (ancien réglage, Haïti)</h2><div class="two"><div class="field"><label for="sh">Frais de livraison (G)</label><input id="sh" type="number" min="0" value="${S.shipping?.flat_fee ?? 0}"></div><div class="field"><label for="sf2">Livraison offerte dès (G, 0 = jamais)</label><input id="sf2" type="number" min="0" value="${S.shipping?.free_over ?? 0}"></div></div>
-  <h2>Modes de paiement</h2><p class="muted">Seul le paiement à la livraison est opérationnel. Les autres passerelles doivent d’abord être configurées (voir README) avant d’être activées.</p>
-  ${Object.entries(pm).map(([k, v]) => `<label class="chk"><input type="checkbox" data-pm="${esc(k)}" ${v.enabled ? 'checked' : ''} ${k === 'cod' ? '' : 'disabled'}> ${esc(v.label)}${k === 'cod' ? '' : ' (non configuré)'}</label>`).join('')}
+  <h2>Modes de paiement</h2><p class="muted">Cochez les modes proposés aux clients. Carte, PayPal et MonCash ne fonctionnent que si leurs clés sont ajoutées dans Vercel (Settings → Environment Variables) ; sinon le client voit « mode de paiement non disponible ».</p>
+  ${Object.entries(pm).map(([k, v]) => `<label class="chk"><input type="checkbox" data-pm="${esc(k)}" ${v.enabled ? 'checked' : ''}> ${esc(v.label)}${PM_HINT[k] ? ` <small class="muted">(${PM_HINT[k]})</small>` : ''}</label>`).join('')}
   <div style="margin-top:14px"><button class="btn primary" id="sb">Enregistrer</button></div></form>
   ${ctx.role === 'SUPER_ADMIN' ? '<div id="team"></div>' : ''}`;
   const eq = () => { const r = +$('#fx-dop').value; $('#fx-eq').value = r > 0 ? `1 RD$ = ${(1 / r).toFixed(2)} G` : ''; }; $('#fx-dop').oninput = eq; eq();
@@ -39,7 +40,7 @@ export async function render(el) {
     const zones = { HT: zone('HT'), DO: zone('DO') };
     const next = { store: { ...S.store, name: $('#sn').value.trim() || 'JLODNA Plas', phone: $('#sp').value.trim() }, shipping: { flat_fee: +$('#sh').value || 0, free_over: +$('#sf2').value || null },
       currencies: { ...(S.currencies || {}), HTG: { ...DEFAULT_CONFIG.HTG, ...(S.currencies?.HTG || {}), rate: 1 }, DOP: { ...DEFAULT_CONFIG.DOP, ...(S.currencies?.DOP || {}), rate, enabled: $('#fx-dop-on').checked } }, shipping_zones: zones,
-      payment_methods: Object.fromEntries(Object.entries(pm).map(([k, v]) => [k, { ...v, enabled: k === 'cod' ? $(`[data-pm="cod"]`).checked : v.enabled }])) };
+      payment_methods: Object.fromEntries(Object.entries(pm).map(([k, v]) => [k, { ...v, enabled: $(`[data-pm="${k}"]`).checked }])) };
     for (const [key, value] of Object.entries(next)) { const { error } = await sb.from('settings').upsert({ key, value }); if (error) return toast(friendlyError(error), 'err'); }
     try { localStorage.removeItem('jl_fx_v1'); } catch { /* ignoré */ }
     toast('Paramètres enregistrés.');
