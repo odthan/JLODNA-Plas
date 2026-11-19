@@ -40,10 +40,15 @@ function render(p) {
     <p class="price" id="price"></p><p class="stock" id="stock" aria-live="polite"></p><p class="muted" id="sku"></p>
     <div id="variants"></div>
     <div class="field"><label for="qty">Quantité</label><div class="qty"><button type="button" id="qm" aria-label="Moins">−</button><input id="qty" type="number" value="1" min="1" max="99" inputmode="numeric"><button type="button" id="qp" aria-label="Plus">+</button></div></div>
-    <div class="row"><button class="btn primary" id="add">Ajouter au panier</button><button class="btn dark" id="buy">Acheter maintenant</button></div>
+    <div class="row" id="row-add"><button class="btn primary" id="add">Ajouter au panier</button></div>
+    <p class="stock in" id="added-msg" role="status" hidden>✔ Produit ajouté au panier.</p>
+    <div class="row" id="row-after" hidden><button class="btn dark" id="buy">Acheter maintenant</button><a class="btn primary" id="view-cart" href="/cart">Voir le panier</a></div>
     <div class="prose" style="padding-top:20px;white-space:pre-line">${esc(p.description || '')}</div></div></div>`;
 
   const q = $('#qty');
+  // Après « Ajouter au panier » : on propose « Acheter maintenant » et « Voir le panier » ; tout changement de variante ou de quantité réaffiche « Ajouter ».
+  const showAfter = (on) => { $('#row-add').hidden = on; $('#row-after').hidden = !on; $('#added-msg').hidden = !on; };
+  const resetAdd = () => showAfter(false);
   const current = () => findVariant(variants, sel) || (!multi ? variants[0] : null);
   const clamp = () => { const v = current(); const max = Math.max(availableOf(v), 1); q.max = max; q.value = Math.max(1, Math.min(max, +q.value || 1)); };
   const drawOptions = () => {
@@ -52,7 +57,7 @@ function render(p) {
       const ok = optionAvailable(variants, g.name, o, sel);
       return `<label><input type="radio" name="g${gi}" value="${esc(o)}" data-g="${esc(g.name)}" ${sel[g.name] === o ? 'checked' : ''}><span class="${ok ? '' : 'na'}">${esc(o)}${ok ? '' : ' (épuisé)'}</span></label>`;
     }).join('')}</div></fieldset>`).join('');
-    root.querySelectorAll('#variants input').forEach((i) => (i.onchange = () => { sel[i.dataset.g] = i.value; refresh(); }));
+    root.querySelectorAll('#variants input').forEach((i) => (i.onchange = () => { sel[i.dataset.g] = i.value; resetAdd(); refresh(); }));
   };
   const refresh = () => {
     drawOptions();
@@ -72,10 +77,11 @@ function render(p) {
     clamp();
   };
   refresh();
-  $('#qm').onclick = () => { q.value = +q.value - 1; clamp(); }; $('#qp').onclick = () => { q.value = +q.value + 1; clamp(); }; q.onchange = clamp;
+  $('#qm').onclick = () => { q.value = +q.value - 1; clamp(); resetAdd(); }; $('#qp').onclick = () => { q.value = +q.value + 1; clamp(); resetAdd(); }; q.onchange = () => { clamp(); resetAdd(); };
   root.querySelectorAll('.thumbs button').forEach((b) => (b.onclick = () => { const i = imgs[+b.dataset.i]; $('#main-img').src = i.url; root.querySelectorAll('.thumbs button').forEach((x) => x.removeAttribute('aria-current')); b.setAttribute('aria-current', 'true'); }));
-  const add = (go) => { const v = current(); if (!v || availableOf(v) <= 0) return; addItem(v.id, p.id, +q.value, availableOf(v)); if (go) location.href = localizePath('/checkout'); };
-  $('#add').onclick = () => add(false); $('#buy').onclick = () => add(true);
+  $('#add').onclick = () => { const v = current(); if (!v || availableOf(v) <= 0) return; addItem(v.id, p.id, +q.value, availableOf(v)); showAfter(true); };
+  $('#buy').onclick = () => { location.href = localizePath('/checkout'); }; // l'article est déjà dans le panier
+  $('#view-cart').href = localizePath('/cart');
 
   // Temps réel : stock / prix / statut des variantes à jour sans recharger la page.
   subscribe(`variants-${p.id}`, { event: '*', table: 'product_variants', filter: `product_id=eq.${p.id}` }, async () => {
