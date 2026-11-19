@@ -131,4 +131,4 @@ function seo(p) {
   // hreflang : la même fiche produit existe en espagnol et en créole (SEO international)
   document.querySelectorAll('link[rel=alternate][hreflang]').forEach((n) => n.remove());
   for (const l of Object.keys(LANGS)) document.head.insertAdjacentHTML('beforeend', `<link rel="alternate" hreflang="${l}" href="${L(`/product?slug=${encodeURIComponent(p.slug)}`).replace(`/${lang}/`, `/${l}/`)}">`);
-}
+  }
