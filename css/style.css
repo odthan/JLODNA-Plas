@@ -86,3 +86,5 @@ details.b2b-req>summary{cursor:pointer;list-style:none;font-weight:600}details.b
 /* Formulaire d'adresse par pays */
 .addr-hint{font-size:.82rem;color:#666;margin:-6px 0 12px}
 .field[hidden]{display:none}
+
+.row[hidden],p[hidden]{display:none}
