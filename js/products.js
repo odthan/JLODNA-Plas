@@ -1,4 +1,5 @@
 import { sb } from './supabase.js';
+import { localizePath } from './i18n.js';
 import { esc, fmtPrice, safeUrl } from './utils.js';
 import { addItem } from './cart.js';
 import { activeVariants, totalAvailable, priceRange, effectivePrice, availableOf } from './variants.js';
@@ -77,5 +78,5 @@ export function productCard(p) {
     </div></article>`;
 }
 export function bindAddButtons(root = document) {
-  root.querySelectorAll('[data-add]').forEach((b) => { if (b.dataset.bound) return; b.dataset.bound = 1; b.addEventListener('click', () => addItem(b.dataset.add, b.dataset.pid, 1, +b.dataset.max || 99)); });
+  root.querySelectorAll('[data-add]').forEach((b) => { if (b.dataset.bound) return; b.dataset.bound = 1; b.addEventListener('click', () => { addItem(b.dataset.add, b.dataset.pid, 1, +b.dataset.max || 99); const r = document.createElement('div'); r.className = 'row'; r.innerHTML = `<a class="btn dark" href="${localizePath('/checkout')}">Acheter maintenant</a><a class="btn primary" href="${localizePath('/cart')}">Voir le panier</a>`; b.replaceWith(r); }); });
 }
