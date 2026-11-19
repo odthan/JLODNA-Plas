@@ -480,6 +480,8 @@ const words = {
   "Un remboursement est effectué avec le même mode de paiement et dans la devise de la commande, après validation du retour.": "Rembousman an fèt ak menm mòd peman an epi nan lajan kòmand lan, apre nou valide retou a.",
   "Annulation": "Anilasyon",
   "Vous pouvez demander l’annulation d’une commande tant qu’elle n’est pas expédiée, depuis la page Contact.": "Ou ka mande anile yon kòmand toutotan li poko voye, depi paj Kontak la.",
+  "Voir le panier": "Wè panye a",
+  "✔ Produit ajouté au panier.": "✔ Pwodwi ajoute nan panye.",
 };
 const patterns = [
   [/^© (\d{4}) JLODNA Plas\. Tous droits réservés\.$/, (y) => `© ${y} JLODNA Plas. Tout dwa rezève.`],
