@@ -70,7 +70,7 @@ textarea{min-height:110px}.field{margin-bottom:14px}.two{display:grid;gap:12px}.
 .site-footer{background:#000;color:#fff;margin-top:40px;padding-top:36px}.site-footer .grid{display:grid;gap:24px}.site-footer a{display:block;color:var(--g300);text-decoration:none;padding:3px 0}.site-footer a:hover{color:var(--orange)}.site-footer h4{color:#fff}.flogo{filter:invert(0);background:#fff;border-radius:10px;padding:6px;margin-bottom:10px;height:62px;width:auto}.copy{border-top:1px solid #222;margin-top:24px;padding:16px;color:var(--g500);font-size:.85rem}
 .news{display:flex;gap:6px;flex-wrap:wrap}.news input{flex:1;min-width:140px}
 #toasts{position:fixed;left:12px;right:12px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:200;align-items:center;pointer-events:none}.toast{background:#000;color:#fff;padding:12px 18px;border-radius:12px;border-left:6px solid var(--orange);box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:420px}.toast.err{border-color:var(--err)}
-.prose{max-width:70ch;padding:24px 0}
+.prose{max-width:70ch;padding-top:24px;padding-bottom:24px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 .opt .na{opacity:.55;text-decoration:line-through}.price small{color:var(--g500);font-weight:400;margin-right:4px}
 /* B2B + BIO */
