@@ -5,6 +5,7 @@ import { $, esc, fmtPrice, fmtDate, STATUS, emptyState, errorState } from '../ut
 import { subscribe } from '../realtime.js';
 import { ONLINE, PAY_STATUS, startPayment } from '../pay.js';
 import { fmtStored } from '../currency.js';
+import { playSound } from '../sound.js';
 
 initLayout();
 const STEPS = ['new', 'confirmed', 'preparing', 'shipped', 'out_for_delivery', 'delivered'];
@@ -24,6 +25,7 @@ async function load() {
 function banner() {
   const q = new URLSearchParams(location.search); const el = $('#orders'); if (!el) return;
   const t = q.get('paid') ? ['ok', 'Merci ! Votre paiement est en cours de confirmation. Le statut se met à jour automatiquement.'] : q.get('failed') ? ['err', 'Le paiement n’a pas pu être confirmé. Vous pouvez réessayer depuis la commande ci-dessous.'] : q.get('cancelled') ? ['err', 'Paiement annulé. Votre commande reste en attente : vous pouvez payer quand vous voulez.'] : null;
+  if (t && t[0] === 'ok') playSound();
   if (t) el.insertAdjacentHTML('beforebegin', `<p class="order-card" role="status">${t[1]}</p>`);
 }
 (async () => {
