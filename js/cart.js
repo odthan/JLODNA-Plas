@@ -1,6 +1,7 @@
 import { sb } from './supabase.js';
 import { getUser } from './auth.js';
 import { toast } from './utils.js';
+import { playSound } from './sound.js';
 
 // Panier local (visiteurs) identifié par VARIANTE ; synchronisé avec cart_items quand le client est connecté.
 // Clé v2 : l'ancien format (produit + variante JSON) est ignoré et nettoyé.
@@ -22,7 +23,7 @@ export function addItem(variant_id, product_id, quantity = 1, max = 99) {
   const next = Math.min((ex?.quantity || 0) + quantity, Math.min(max, 99));
   if (next < 1) { toast('Produit actuellement indisponible.', 'err'); return; }
   if (ex) ex.quantity = next; else items.push({ variant_id, product_id, quantity: next });
-  write(items); toast('Produit ajouté au panier.');
+  write(items); toast('Produit ajouté au panier.'); playSound();
 }
 export const setQty = (variant_id, quantity) => write(read().map((i) => (i.variant_id === variant_id ? { ...i, quantity: Math.max(1, Math.min(99, quantity)) } : i)));
 export const removeItem = (variant_id) => write(read().filter((i) => i.variant_id !== variant_id));
