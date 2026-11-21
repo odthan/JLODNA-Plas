@@ -1,4 +1,4 @@
-const V = 'jlodna-v4'; const SHELL = ['/', '/es/', '/ht/', '/es/shop', '/ht/shop', '/js/i18n.js', '/js/currency.js', '/js/locales/es.js', '/js/locales/ht.js', '/css/style.css', '/css/responsive.css', '/assets/logo/logo.webp', '/assets/icons/icon-192.png', '/offline.html'];
+const V = 'jlodna-v5'; const SHELL = ['/', '/es/', '/ht/', '/es/shop', '/ht/shop', '/js/i18n.js', '/js/sound.js', '/assets/sounds/son.mp3', '/js/currency.js', '/js/locales/es.js', '/js/locales/ht.js', '/css/style.css', '/css/responsive.css', '/assets/logo/logo.webp', '/assets/icons/icon-192.png', '/offline.html'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(V).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((k) => Promise.all(k.filter((x) => x !== V).map((x) => caches.delete(x)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', (e) => {
