@@ -6,6 +6,7 @@ import { getCartLines } from '../products.js';
 import { isDefaultVariant } from '../variants.js';
 import { $, esc, fmtPrice, fmtDate, isEmail, setLoading, friendlyError, postJSON, STATUS } from '../utils.js';
 import { ONLINE, startPayment } from '../pay.js';
+import { playSound } from '../sound.js';
 import { getLang, localizePath, writePref } from '../i18n.js';
 import { getCurrency, getRate, fmtStored, currencyInfo } from '../currency.js';
 import { loadShipping, shippingFee } from '../shipping.js';
@@ -91,7 +92,7 @@ const METHOD_COUNTRIES = { moncash: ['HT'] };
       <p><strong>Numéro : ${esc(o.order_number)}</strong></p><p>Date : ${fmtDate(o.created_at)}<br>Statut : <span class="status new">${STATUS[o.status]}</span><br>Paiement : ${esc(methods.find(([k]) => k === o.payment_method)?.[1].label || o.payment_method)}<br>Livraison à : ${esc(addressLine(o))}</p>
       <div class="summary">${o.order_items.map((i) => `<div class="line"><span>${esc(i.name)}${i.variant && Object.keys(i.variant).length ? ` (${esc(i.variant_name)})` : ''} × ${i.quantity}</span><span>${money(i.unit_price * i.quantity)}</span></div>`).join('')}<div class="line"><span>Livraison</span><span>${o.shipping_fee ? money(o.shipping_fee) : 'Offerte'}</span></div>${o.discount > 0 ? `<div class="line"><span>Réduction</span><span>− ${money(o.discount)}</span></div>` : ''}<div class="line total"><span>Montant</span><span>${money(o.total)}</span></div></div>
       <div id="pay-box"></div><p style="margin-top:16px" class="row"><a class="btn primary" href="${localizePath('/orders')}">Suivre mes commandes</a><a class="btn ghost" href="${localizePath('/shop')}">Continuer les achats</a></p></div>`;
-    window.scrollTo(0, 0);
+    window.scrollTo(0, 0); playSound();
     const meta = methods.find(([k]) => k === method)?.[1] || {};
     const box = $('#pay-box');
     if (ONLINE.includes(method)) {
