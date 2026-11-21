@@ -1,6 +1,7 @@
 import { initLayout } from '../layout.js';
 import { $, isEmail, setLoading, toast } from '../utils.js';
 import { mountCaptcha, CAPTCHA_MSG } from '../captcha.js';
+import { playSound } from '../sound.js';
 
 initLayout();
 const cap = await mountCaptcha($('#captcha'));
@@ -16,5 +17,5 @@ $('#c-form').addEventListener('submit', async (e) => {
     const j = await r.json().catch(() => ({}));
     if (!r.ok) { cap.reset(); err.textContent = MSG[j.error] || 'Envoi impossible. Réessayez.'; setLoading($('#btn'), false); return; }
   } catch { err.textContent = 'Connexion impossible. Réessayez.'; setLoading($('#btn'), false); return; }
-  setLoading($('#btn'), false); cap.reset(); e.target.reset(); toast('Message envoyé. Nous vous répondrons rapidement.');
+  setLoading($('#btn'), false); cap.reset(); e.target.reset(); toast('Message envoyé. Nous vous répondrons rapidement.'); playSound();
 });
