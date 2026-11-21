@@ -2,6 +2,7 @@ import { sb } from './supabase.js';
 import { getUser } from './auth.js';
 import { esc, fmtDate, toast } from './utils.js';
 import { subscribe } from './realtime.js';
+import { playSound } from './sound.js';
 
 let list = [];
 const bell = () => document.getElementById('notif-root');
@@ -19,7 +20,7 @@ export async function initNotifications() {
   root.querySelector('#notif-readall').addEventListener('click', async () => { await sb.from('notifications').update({ is_read: true }).eq('user_id', u.id).eq('is_read', false); list.forEach((n) => (n.is_read = true)); render(); });
   // Temps réel : une nouvelle notification apparaît sans actualiser la page.
   subscribe(`notifs-${u.id}`, { event: '*', table: 'notifications', filter: `user_id=eq.${u.id}` }, (p) => {
-    if (p.eventType === 'INSERT') { list.unshift(p.new); toast(p.new.title); try { navigator.vibrate?.(60); } catch {} }
+    if (p.eventType === 'INSERT') { list.unshift(p.new); toast(p.new.title); playSound(); try { navigator.vibrate?.(60); } catch {} }
     else if (p.eventType === 'UPDATE') list = list.map((n) => (n.id === p.new.id ? p.new : n));
     else if (p.eventType === 'DELETE') list = list.filter((n) => n.id !== p.old.id);
     render(); window.dispatchEvent(new CustomEvent('jl:notification', { detail: p }));
