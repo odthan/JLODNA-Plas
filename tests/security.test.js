@@ -76,6 +76,6 @@ test('push : secret du webhook, jetons, nettoyage, signature Firebase', async ()
   const msg = JSON.parse(calls.find((c) => c.url.includes('fcm.googleapis.com/v1/projects/jlodna-proj/')).opts.body).message; assert.strictEqual(msg.notification.title, 'Commande expédiée'); assert.strictEqual(msg.data.link, '/orders');
   reset({ tokens: ['GOODTOKEN'] }); await hook('whook', { ...ev, record: { ...ev.record, link: '//evil.example' } });
   assert.strictEqual(JSON.parse(calls.find((c) => c.url.includes('fcm.googleapis.com')).opts.body).message.data.link, '/', 'lien externe neutralisé');
-  const acc = process.env.FCM_SERVICE_ACCOUNT; process.env.FCM_SERVICE_ACCOUNT = ''; reset({ tokens: ['GOODTOKEN'] }); r = await hook('whook', ev); assert.strictEqual(r.body.skipped, 'FCM_NOT_CONFIGURED'); process.env.FCM_SERVICE_ACCOUNT = acc;
+  const acc = process.env.FCM_SERVICE_ACCOUNT; process.env.FCM_SERVICE_ACCOUNT = ''; reset({ tokens: ['GOODTOKEN'] }); r = await hook('whook', ev); assert.strictEqual(r.body.skipped, 'PUSH_NOT_CONFIGURED'); process.env.FCM_SERVICE_ACCOUNT = acc;
   const ws = process.env.PUSH_WEBHOOK_SECRET; process.env.PUSH_WEBHOOK_SECRET = ''; r = await hook('', ev); assert.strictEqual(r.code, 401, 'sans secret configuré : tout est refusé'); process.env.PUSH_WEBHOOK_SECRET = ws;
 });
